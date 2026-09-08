@@ -2,7 +2,11 @@
 target
 
 # Rust: Docs
+generated
 book
+
+# JavaScript: Build Files
+node_modules
 
 # Local: Environment Files
 .local

@@ -29,4 +29,4 @@
 - [Reference]()
     - [Protocol]()
     - [Blocks]()
-    - [Smileys]()
+    - [Smileys](./generated/smileys.md)
