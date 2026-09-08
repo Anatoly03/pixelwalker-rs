@@ -28,5 +28,5 @@
     - [Building a Custom SDK]()
 - [Reference]()
     - [Protocol]()
-    - [Blocks]()
-    - [Smileys](./generated/smileys.md)
+    - [Block List](./generated/blocks.md)
+    - [Smiley List](./generated/smileys.md)

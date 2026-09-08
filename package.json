@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [],
   "scripts": {
+    "generate-block-reference": "npx tsx .github/scripts/generate-block-reference.ts",
     "generate-smiley-reference": "npx tsx .github/scripts/generate-smiley-reference.ts"
   },
   "devDependencies": {

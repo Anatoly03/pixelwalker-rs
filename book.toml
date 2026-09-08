@@ -10,7 +10,7 @@ authors = ["Anatoly Wein"]
 # mdbook serve pixelwalker-docs/en
 
 language = "en"
-src = "pixelwalker-docs/en"
+src = "pixelwalker-docs/en/src"
 
 [build]
 build-dir = "pixelwalker-docs/en/book"
