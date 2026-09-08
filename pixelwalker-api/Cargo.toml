@@ -1,0 +1,8 @@
+[package]
+name = "pixelwalker-api"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pocketbase-sdk = { version = "0.4.0", git = "https://github.com/sreedevk/pocketbase-sdk-rust", tag = "0.4.0" }
+serde = { version = "1", features = ["derive"] }
