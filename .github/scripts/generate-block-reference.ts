@@ -101,7 +101,7 @@ function generatePreambelForLocale(locale: string): string {
 
 > Note: For reference purposes only. This list may be out of date
 > or inconsistant with the game. Generated on ${new Date().toDateString()}.
-> This list is sorted alphabetically.
+> This list is not sorted.
 
 | | Name |\n| :---: | --- |\n`;
         default:
