@@ -1,0 +1,6 @@
+# Build Files (Rust)
+target
+
+# Local, Environment Files
+.local
+.env
