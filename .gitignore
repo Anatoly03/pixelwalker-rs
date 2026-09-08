@@ -1,6 +1,9 @@
-# Build Files (Rust)
+# Rust: Build Files
 target
 
-# Local, Environment Files
+# Rust: Docs
+book
+
+# Local: Environment Files
 .local
 .env

@@ -1,0 +1,17 @@
+[book]
+title = "PixelWalker Rust SDK"
+authors = ["Anatoly Wein"]
+
+# The default build configuration is localized english. This toml file should
+# be synced with the english book.toml as it serves as a shortcut. The following
+# two commands should produce the same.
+#
+# mdbook serve
+# mdbook serve pixelwalker-docs/en
+
+language = "en"
+src = "pixelwalker-docs/en"
+
+[build]
+build-dir = "pixelwalker-docs/en/book"
+extra-watch-dirs = ["pixelwalker-docs/media"]
