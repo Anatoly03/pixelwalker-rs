@@ -20,8 +20,8 @@ fn main() -> anyhow::Result<()> {
 
     println!("# Most Wooted Worlds");
     println!();
-    println!("| {0:>7} | Woots | Title{:>25} |", "");
-    println!("|:{0:->7}:|:{0:->5}:|:{:->30}-|", "");
+    println!("| {0:>7} | Woots | Title{0:>25} | Owner{0:>15} |", "");
+    println!("|:{0:->7}:|:{0:->5}:|:{0:->30}-|:{0:->20}-|", "");
     for (idx, world) in client
         .collection::<World>()
         .sort("-woots")
@@ -30,14 +30,15 @@ fn main() -> anyhow::Result<()> {
         .iter()
         .enumerate()
     {
-        println!("| {:>7} | {:>5} | {:<30} |", format!("**{}.**", idx + 1), world.woots, world.title);
+        let owner = client.collection::<User>().view(&world.owner)?;
+        println!("| {:>7} | {:>5} | {:<30} | {:>20} |", format!("**{}.**", idx + 1), world.woots, world.title, owner.username);
     }
     println!();
 
     println!("# Most Played Worlds");
     println!();
-    println!("| {0:>7} | Plays | Title{:>25} |", "");
-    println!("|:{0:->7}:|:{0:->5}:|:{:->30}-|", "");
+    println!("| {0:>7} | Plays | Title{0:>25} | Owner{0:>15} |", "");
+    println!("|:{0:->7}:|:{0:->5}:|:{0:->30}-|:{0:->20}-|", "");
     for (idx, world) in client
         .collection::<World>()
         .sort("-plays")
@@ -45,7 +46,8 @@ fn main() -> anyhow::Result<()> {
         .iter()
         .enumerate()
     {
-        println!("| {:>7} | {:>5} | {:<30} |", format!("**{}.**", idx + 1), world.plays, world.title);
+        let owner = client.collection::<User>().view(&world.owner)?;
+        println!("| {:>7} | {:>5} | {:<30} | {:>20} |", format!("**{}.**", idx + 1), world.plays, world.title, owner.username);
     }
     println!();
     Ok(())

@@ -107,6 +107,37 @@ where
         Ok(items)
     }
 
+    /// Fetches the first element of the query.
+    ///
+    /// This can be used to retrieve the most wooted world, or the first item
+    /// that matches the query.
+    pub fn take_one(&self) -> Result<Option<T>> {
+        Ok(self
+            .list()
+            .per_page(1)
+            .call::<T>()?
+            .items
+            .into_iter()
+            .next())
+    }
+
+    /// Views an element by the id.
+    ///
+    /// # Example
+    ///
+    /// ```no_run,no_test
+    /// use pixelwalker::{Client, api::User};
+    /// let client = Client::new().auth_with_email_password()?;
+    /// let user = client.collection<User>().view("5cy5r7za1r3splc")?;
+    /// assert_eq!("ANATOLY", user.username);
+    /// ```
+    pub fn view<K: AsRef<str>>(&self, id: K) -> Result<T> {
+        self.client
+            .records(T::COLLECTION_NAME)
+            .view(id.as_ref())
+            .call()
+    }
+
     /// Fetches all elements of the query.
     ///
     /// This is an expensive operation and not recommended to be called.
