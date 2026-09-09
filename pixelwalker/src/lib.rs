@@ -8,5 +8,5 @@ pub mod state;
 pub(crate) mod vars;
 
 pub use client::Client;
-pub use pixelwalker_api as api;
 pub use join_key::JoinKey;
+pub use pixelwalker_api as api;

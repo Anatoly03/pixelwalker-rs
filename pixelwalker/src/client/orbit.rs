@@ -57,7 +57,9 @@ impl Client<Orbit> {
                                 // let mut channel = channel.lock().await;
                                 let _ = self
                                     .websocket
-                                    .send(tokio_tungstenite::tungstenite::Message::Binary(buf.into()))
+                                    .send(tokio_tungstenite::tungstenite::Message::Binary(
+                                        buf.into(),
+                                    ))
                                     .await;
                             }
                         }
@@ -74,11 +76,13 @@ impl Client<Orbit> {
                                 // let mut channel = channel.lock().await;
                                 let _ = self
                                     .websocket
-                                    .send(tokio_tungstenite::tungstenite::Message::Binary(buf.into()))
+                                    .send(tokio_tungstenite::tungstenite::Message::Binary(
+                                        buf.into(),
+                                    ))
                                     .await;
                             }
                         }
-                        _ => {},
+                        _ => {}
                     }
                 }
                 WsMessage::Close(Some(frame)) => {

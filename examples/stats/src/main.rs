@@ -34,7 +34,13 @@ fn main() -> anyhow::Result<()> {
         .enumerate()
     {
         let owner = client.collection::<User>().view(&world.owner)?;
-        println!("| {:>7} | {:>5} | {:<30} | {:>20} |", format!("**{}.**", idx + 1), world.woots, world.title, owner.username);
+        println!(
+            "| {:>7} | {:>5} | {:<30} | {:>20} |",
+            format!("**{}.**", idx + 1),
+            world.woots,
+            world.title,
+            owner.username
+        );
     }
     println!();
 
@@ -51,7 +57,13 @@ fn main() -> anyhow::Result<()> {
         .enumerate()
     {
         let owner = client.collection::<User>().view(&world.owner)?;
-        println!("| {:>7} | {:>5} | {:<30} | {:>20} |", format!("**{}.**", idx + 1), world.plays, world.title, owner.username);
+        println!(
+            "| {:>7} | {:>5} | {:<30} | {:>20} |",
+            format!("**{}.**", idx + 1),
+            world.plays,
+            world.title,
+            owner.username
+        );
     }
     println!();
 
@@ -68,7 +80,10 @@ fn main() -> anyhow::Result<()> {
         .collect()?
         .iter()
     {
-        println!("| {:<15} | {:<30} | {:<10} |", world.id, world.title, world.visibility);
+        println!(
+            "| {:<15} | {:<30} | {:<10} |",
+            world.id, world.title, world.visibility
+        );
     }
     println!();
 

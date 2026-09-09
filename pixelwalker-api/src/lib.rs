@@ -13,7 +13,7 @@ pub use pocketbase_sdk::client::Client as PocketBase;
 pub use pocketbase_sdk::collections::Collection as PocketBaseCollection;
 
 /// Protobuf packet definitions for PixelWalker.
-/// 
+///
 /// These packets are used for communication with the world server and
 /// are generated from the `world.proto` file.
 pub mod packets {

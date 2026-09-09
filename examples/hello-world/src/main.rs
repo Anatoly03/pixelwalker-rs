@@ -1,4 +1,4 @@
-use pixelwalker::{Client, api::User};
+use pixelwalker::Client;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
