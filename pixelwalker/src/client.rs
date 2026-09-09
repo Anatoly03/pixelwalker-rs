@@ -5,8 +5,10 @@ use crate::{
     vars::{AUTH_EMAIL, AUTH_PASSWORD, PIXELWALKER_API_HOST},
 };
 use anyhow::Result;
+use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 use pixelwalker_api::{PWCollection, PWCollectionQuery, PocketBase};
 use serde::de::DeserializeOwned;
+use serde_json::Value;
 use std::{env::VarError, fmt::Debug};
 
 /// A PixelWalker client instance.
@@ -69,6 +71,32 @@ impl Client<Guest> {
 }
 
 impl Client<Lobby> {
+    /// Decodes the identifier of the logged in user record. In other words,
+    /// when you log in into the user account `x`, this is the id of `x`.
+    ///
+    /// ### Example
+    ///
+    /// ```no_run,no_test
+    /// let _ = dotenvy::dotenv();
+    /// let client = Client::new().auth_with_email_password()?;
+    /// let auth_id = client.auth_id();
+    /// let bot = client.collection::<User>().view(auth_id)?;
+    /// println!("Logged in as: {}", bot.username);
+    /// ```
+    ///
+    pub fn auth_id(&self) -> String {
+        let token = self
+            .pocketbase
+            .auth_token
+            .as_ref()
+            .expect("auth token should be set");
+        let payload = token.split('.').skip(1).next().unwrap();
+        let decoded = STANDARD_NO_PAD.decode(payload).unwrap();
+        let data: Value =
+            serde_json::from_slice(&decoded).expect("auth token should not be corrupted");
+        data["id"].as_str().unwrap().to_owned()
+    }
+
     /// Creates a new collection query builder.
     ///
     /// ### Example

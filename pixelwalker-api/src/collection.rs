@@ -2,7 +2,7 @@ use crate::{PWCollection, PocketBase};
 use anyhow::Result;
 use pocketbase_sdk::{client::Auth, records::RecordsListRequestBuilder};
 use serde::de::DeserializeOwned;
-use std::marker::PhantomData;
+use std::{format, marker::PhantomData};
 
 /// The magic number `1000` which is used in the first list request. This tries
 /// to find the maximal amount of entries per page.
@@ -13,6 +13,7 @@ pub struct PWCollectionQuery<'a, T: PWCollection> {
     pub(crate) client: &'a PocketBase<Auth>,
     pub(crate) phantom: PhantomData<T>,
     pub(crate) sort_options: Vec<String>,
+    pub(crate) filters: Vec<String>,
 }
 
 impl<'a, T> PWCollectionQuery<'a, T>
@@ -32,6 +33,7 @@ where
             client,
             phantom: PhantomData,
             sort_options: vec![],
+            filters: vec![],
         }
     }
 
@@ -52,12 +54,41 @@ where
         self
     }
 
+    /// Pushes a new filter to the query builder. The sort direction can be
+    /// optionally specified with a leading `+` (ascending, default) or a `-`
+    /// (descending).
+    ///
+    /// See [Filters Syntax](https://pocketbase.io/docs/api-rules-and-filters/#filters-syntax)
+    /// for information on how to use filters.
+    ///
+    /// # Example
+    ///
+    /// ```no_run,no_test
+    /// let client = Client::new().auth_with_email_password()?;
+    /// // Filter for worlds which the bot account owns.
+    /// let query = client.collection::<World>().filter("owner = @request.auth.id");
+    /// ```
+    pub fn filter<K: ToString>(&mut self, filter_option: K) -> &mut Self {
+        self.filters.push(filter_option.to_string());
+        self
+    }
+
     /// Creates an internal list request builder, with the corresponding
     /// sort options and filters.
     fn list(&self) -> RecordsListRequestBuilder<'_> {
         let mut list = self.client.records(T::COLLECTION_NAME).list();
         if self.sort_options.len() > 0 {
             list = list.sort(&self.sort_options.join(","));
+        }
+        if self.filters.len() > 0 {
+            list = list.filter(
+                &self
+                    .filters
+                    .iter()
+                    .map(|f| format!("({f})"))
+                    .collect::<Vec<_>>()
+                    .join(" && "),
+            );
         }
         list
     }
@@ -102,6 +133,50 @@ where
             }
 
             items.extend(response.items.into_iter().take(amount - items.len()));
+        }
+
+        Ok(items)
+    }
+
+    /// Yields elements based on a predicate.
+    ///
+    /// If the predicate is simple, like comparing two fields or comparing a
+    /// field against a constant, `filter().all()` might be more efficient to use.
+    pub fn take_while<P>(&self, mut predicate: P) -> Result<Vec<T>>
+    where
+        P: FnMut(&T) -> bool,
+    {
+        let mut items = Vec::new();
+        let mut response = self.list().per_page(PER_PAGE_START).call::<T>()?;
+        let mut finish = false;
+
+        for value in response.items.into_iter() {
+            if !predicate(&value) {
+                finish = true;
+                break;
+            }
+
+            items.push(value);
+        }
+
+        while !finish {
+            response = self
+                .list()
+                .per_page(response.per_page)
+                .page(response.page + 1)
+                .call::<T>()?;
+            let response_len = response.items.len();
+
+            for value in response.items.into_iter() {
+                if !predicate(&value) {
+                    finish = true;
+                    break;
+                }
+
+                items.push(value);
+            }
+
+            finish = finish || (response_len != response.per_page as usize);
         }
 
         Ok(items)
