@@ -5,8 +5,9 @@ mod lobby;
 mod orbit;
 
 use crate::state::State;
-pub use lobby::Lobby;
 pub use guest::Guest;
+pub use lobby::Lobby;
+pub use orbit::Orbit;
 use pixelwalker_api::PocketBase;
 use std::fmt::Debug;
 

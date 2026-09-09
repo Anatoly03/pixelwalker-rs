@@ -7,3 +7,4 @@ edition = "2024"
 anyhow = "1.0.104"
 dotenvy = "0.15.7"
 pixelwalker = { path = "../../pixelwalker" }
+tokio = { version = "1", features = ["full"] }

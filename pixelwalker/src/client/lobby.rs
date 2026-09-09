@@ -1,9 +1,18 @@
+use crate::JoinKey;
+use crate::vars::PIXELWALKER_GAME_HOST;
 use crate::{Client, state::State};
+use anyhow::Result;
 use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
+use futures_util::StreamExt;
 use pixelwalker_api::pocketbase::client::Auth;
 use pixelwalker_api::{PWCollection, PWCollectionQuery};
+use reqwest::header::{AUTHORIZATION, HeaderMap};
+use reqwest::{Client as FetchClient, Url};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
+use std::{format, println};
+use tokio_tungstenite::connect_async;
+use tokio_tungstenite::tungstenite::Message as WsMessage;
 
 /// The logged-in lobby state. The client has logged in and sees the lobby
 /// now. It can either join the world as a logged-in user, accept or reject
@@ -68,5 +77,74 @@ impl Client<Lobby> {
         T: PWCollection + Default + DeserializeOwned,
     {
         PWCollectionQuery::<'a, T>::new(&self.pocketbase)
+    }
+
+    /// Retrieves the join key for a given world ID.
+    pub async fn get_join_key<W: AsRef<str>>(&self, world_id: W) -> Result<JoinKey> {
+        let host = &self.pocketbase.base_url;
+        let endpoint = format!("{host}/api/joinkey/pixelwalker/{}", world_id.as_ref());
+        let mut builder = FetchClient::builder();
+
+        // Add auth token if available.
+        if let Some(token) = &self.pocketbase.auth_token {
+            let mut headers = HeaderMap::new();
+            headers.insert(AUTHORIZATION, format!("Bearer {}", token).parse().unwrap());
+            builder = builder.default_headers(headers);
+        }
+
+        let value = builder
+            .build()?
+            .get(endpoint)
+            .send()
+            .await?
+            .json::<JoinKey>()
+            .await?;
+
+        Ok(value)
+    }
+
+    /// Connects to a world and returns an orbiting client.
+    pub async fn connect(self, join_key: JoinKey) -> Result<Client<super::Orbit>> {
+        // Set up web socket stream. This will send an HHTTP request, but not accept
+        // any incoming packets yet.
+        let mut stream = {
+            let game_host: &str = &PIXELWALKER_GAME_HOST;
+            let token = &join_key.token;
+            let socket_url: Url = Url::parse(&format!("{}/ws?joinKey={}", game_host, token))?;
+            let (ws_stream, response) = connect_async(socket_url.as_str()).await?;
+            println!("{response:?}");
+            ws_stream
+        };
+
+        loop {
+            // Fetch the next message. Since this stream should run indefinitely, if it is
+            // [None] or an error in the optional, we halt.
+            let message = match stream.next().await {
+                Some(Ok(message)) => message,
+                Some(Err(e)) => {
+                    println!("Error: {e}");
+                    break;
+                }
+                None => break,
+            };
+
+            // Detect message type and only pass binary messages to a special handler.
+            match message {
+                WsMessage::Text(text) => {
+                    println!("Binary: {text}");
+                }
+                WsMessage::Binary(message) => {
+                    println!("Binary: {message:?}");
+                }
+                WsMessage::Close(Some(frame)) => {
+                    println!("Close Frame: {frame:?}");
+                }
+                _ => {}
+            }
+        }
+
+        return Ok(Client {
+            pocketbase: self.pocketbase,
+        });
     }
 }
