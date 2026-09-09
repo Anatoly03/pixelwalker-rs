@@ -7,8 +7,8 @@
 ---
 
 - [Chapter: The API Server]()
-    - [Hello, User!]()
-    - [Fetching PocketBase]()
+    - [Logging In](./api_login.md)
+    - [Fetching Worlds](./api_fetching_worlds.md)
 - [Chapter: The Game Server]()
     - [Connecting a Bot]()
     - [PixelWalker Protocol]()
