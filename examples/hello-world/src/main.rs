@@ -7,6 +7,7 @@ async fn main() -> anyhow::Result<()> {
     let world_id = std::env::var("WORLD_ID").unwrap();
     let joinkey = client.get_join_key(world_id).await?;
     let client = client.connect(joinkey).await?;
+    let _ = client.listen().await?;
 
     Ok(())
 }

@@ -5,4 +5,7 @@ use pixelwalker_api::pocketbase::client::{Auth, NoAuth};
 pub trait State {
     /// The PocketBase state: Either [Auth] or [NoAuth].
     type PocketBaseState;
+
+    /// The Socket struct, either `()` or `WebSocketStream<MaybeTlsStream<TcpStream>>`
+    type SocketStruct;
 }

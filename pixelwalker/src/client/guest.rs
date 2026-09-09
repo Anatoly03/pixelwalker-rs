@@ -13,6 +13,7 @@ pub struct Guest;
 
 impl State for Guest {
     type PocketBaseState = NoAuth;
+    type SocketStruct = ();
 }
 
 impl Client<Guest> {
@@ -21,6 +22,7 @@ impl Client<Guest> {
     pub fn new() -> Client<Guest> {
         Self {
             pocketbase: PocketBase::new(&PIXELWALKER_API_HOST),
+            websocket: (),
         }
     }
 
@@ -63,6 +65,9 @@ impl Client<Guest> {
             .pocketbase
             .auth_with_password("users", identifier, secret)?;
 
-        return Ok(Client { pocketbase });
+        return Ok(Client {
+            pocketbase,
+            websocket: (),
+        });
     }
 }

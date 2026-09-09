@@ -16,6 +16,10 @@ pub struct Client<S: State> {
     /// The [PocketBase] client instance, which is used for communication with
     /// the API server. It handles authentication and querying the database.
     pub(crate) pocketbase: PocketBase<S::PocketBaseState>,
+
+    /// The websocket instance, which is used for communication with the game
+    /// server.
+    pub(crate) websocket: S::SocketStruct,
 }
 
 impl<S: State> Debug for Client<S> {

@@ -3,18 +3,14 @@ use crate::vars::PIXELWALKER_GAME_HOST;
 use crate::{Client, state::State};
 use anyhow::Result;
 use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
-use futures_util::StreamExt;
-use pixelwalker_api::packets::WorldPacket;
 use pixelwalker_api::pocketbase::client::Auth;
 use pixelwalker_api::{PWCollection, PWCollectionQuery};
-use prost::Message;
 use reqwest::header::{AUTHORIZATION, HeaderMap};
 use reqwest::{Client as FetchClient, Url};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
 use std::{format, println};
-use tokio_tungstenite::connect_async;
-use tokio_tungstenite::tungstenite::Message as WsMessage;
+use tokio_tungstenite::{WebSocketStream, connect_async};
 
 /// The logged-in lobby state. The client has logged in and sees the lobby
 /// now. It can either join the world as a logged-in user, accept or reject
@@ -23,6 +19,7 @@ pub struct Lobby;
 
 impl State for Lobby {
     type PocketBaseState = Auth;
+    type SocketStruct = ();
 }
 
 impl Client<Lobby> {
@@ -106,10 +103,12 @@ impl Client<Lobby> {
     }
 
     /// Connects to a world and returns an orbiting client.
+    ///
+    /// This sets up a [WebSocketStream] by sending an HTTP request to the server
+    /// which gets upgraded to a websocket. This function will not start listening to
+    /// incoming events.
     pub async fn connect(self, join_key: JoinKey) -> Result<Client<super::Orbit>> {
-        // Set up web socket stream. This will send an HHTTP request, but not accept
-        // any incoming packets yet.
-        let mut stream = {
+        let websocket: WebSocketStream<_> = {
             let game_host: &str = &PIXELWALKER_GAME_HOST;
             let token = &join_key.token;
             let socket_url: Url = Url::parse(&format!("{}/ws?joinKey={}", game_host, token))?;
@@ -118,36 +117,9 @@ impl Client<Lobby> {
             ws_stream
         };
 
-        loop {
-            // Fetch the next message. Since this stream should run indefinitely, if it is
-            // [None] or an error in the optional, we halt.
-            let message = match stream.next().await {
-                Some(Ok(message)) => message,
-                Some(Err(e)) => {
-                    println!("Error: {e}");
-                    break;
-                }
-                None => break,
-            };
-
-            // Detect message type and only pass binary messages to a special handler.
-            match message {
-                WsMessage::Text(text) => {
-                    println!("Binary: {text}");
-                }
-                WsMessage::Binary(message) => {
-                    let world_packet = WorldPacket::decode(&message[..])?;
-                    println!("World Packet: {world_packet:?}");
-                }
-                WsMessage::Close(Some(frame)) => {
-                    println!("Close Frame: {frame:?}");
-                }
-                _ => {}
-            }
-        }
-
         return Ok(Client {
             pocketbase: self.pocketbase,
+            websocket,
         });
     }
 }
