@@ -206,6 +206,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "dotenvy"
+version = "0.15.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
+
+[[package]]
 name = "encoding_rs"
 version = "0.8.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -241,6 +247,16 @@ dependencies = [
  "env_filter",
  "jiff",
  "log",
+]
+
+[[package]]
+name = "example-stats"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dotenvy",
+ "pixelwalker",
+ "serde_json",
 ]
 
 [[package]]
@@ -606,13 +622,17 @@ checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 name = "pixelwalker"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "once_cell",
  "pixelwalker-api",
+ "serde",
 ]
 
 [[package]]
 name = "pixelwalker-api"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "pocketbase-sdk",
  "serde",
 ]
