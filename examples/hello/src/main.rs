@@ -60,15 +60,15 @@ fn main() -> anyhow::Result<()> {
     println!();
     println!("These are all the worlds the bot account has access to.");
     println!();
-    println!("| Id{0:>13} | Title{0:>25} |", "");
-    println!("|:{0:->15}:|:{0:->30}-|", "");
+    println!("| Id{0:>13} | Title{0:>25} | Visibility |", "");
+    println!("|:{0:->15}:|:{0:->30}-|:{0:->10}:|", "");
     for world in client
         .collection::<World>()
         .filter(format!("owner = {:?}", auth_id))
         .collect()?
         .iter()
     {
-        println!("| {:<15} | {:<30} |", world.id, world.title);
+        println!("| {:<15} | {:<30} | {:<10} |", world.id, world.title, world.visibility);
     }
     println!();
 
