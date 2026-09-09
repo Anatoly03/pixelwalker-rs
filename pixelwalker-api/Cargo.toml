@@ -6,4 +6,8 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.104"
 pocketbase-sdk = { version = "0.4.0", git = "https://github.com/sreedevk/pocketbase-sdk-rust", tag = "0.4.0" }
+prost = "0.14.4"
 serde = { version = "1", features = ["derive"] }
+
+[build-dependencies]
+prost-build = { version = "0.14.4", features = ["cleanup-markdown"]}

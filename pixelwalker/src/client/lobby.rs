@@ -4,8 +4,10 @@ use crate::{Client, state::State};
 use anyhow::Result;
 use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 use futures_util::StreamExt;
+use pixelwalker_api::packets::WorldPacket;
 use pixelwalker_api::pocketbase::client::Auth;
 use pixelwalker_api::{PWCollection, PWCollectionQuery};
+use prost::Message;
 use reqwest::header::{AUTHORIZATION, HeaderMap};
 use reqwest::{Client as FetchClient, Url};
 use serde::de::DeserializeOwned;
@@ -134,7 +136,8 @@ impl Client<Lobby> {
                     println!("Binary: {text}");
                 }
                 WsMessage::Binary(message) => {
-                    println!("Binary: {message:?}");
+                    let world_packet = WorldPacket::decode(&message[..])?;
+                    println!("World Packet: {world_packet:?}");
                 }
                 WsMessage::Close(Some(frame)) => {
                     println!("Close Frame: {frame:?}");
