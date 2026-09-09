@@ -256,6 +256,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "example-hello-world"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dotenvy",
+ "pixelwalker",
+]
+
+[[package]]
 name = "example-stats"
 version = "0.1.0"
 dependencies = [

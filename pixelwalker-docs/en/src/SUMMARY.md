@@ -10,7 +10,7 @@
     - [Logging In](./api_login.md)
     - [Fetching Worlds](./api_fetching_worlds.md)
 - [Chapter: The Game Server]()
-    - [Connecting a Bot]()
+    - [Connecting a Bot](./game_connecting.md)
     - [PixelWalker Protocol]()
     - [Chat Games]()
 - [Chapter: Block Processing]()
