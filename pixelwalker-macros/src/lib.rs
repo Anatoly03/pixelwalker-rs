@@ -2,7 +2,6 @@ mod macro_handler;
 
 use crate::macro_handler::HandlerMeta;
 use proc_macro::TokenStream;
-use quote::quote;
 use syn::{ItemFn, parse_macro_input};
 
 /// A macro attribute to define a packet handler.
