@@ -93,10 +93,10 @@ impl Client<Guest> {
             );
         }
 
-        return Ok(Client {
+        Ok(Client {
             pocketbase,
             channel: (),
             handlers: (),
-        });
+        })
     }
 }

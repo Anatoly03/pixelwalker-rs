@@ -77,10 +77,10 @@ where
     /// sort options and filters.
     fn list(&self) -> RecordsListRequestBuilder<'_> {
         let mut list = self.client.records(T::COLLECTION_NAME).list();
-        if self.sort_options.len() > 0 {
+        if !self.sort_options.is_empty() {
             list = list.sort(&self.sort_options.join(","));
         }
-        if self.filters.len() > 0 {
+        if !self.filters.is_empty() {
             list = list.filter(
                 &self
                     .filters

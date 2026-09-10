@@ -39,10 +39,10 @@ impl Client<Orbit> {
             })
             .await?;
 
-        return Ok(Client {
+        Ok(Client {
             pocketbase: self.pocketbase,
             channel: self.channel,
             handlers: self.handlers,
-        });
+        })
     }
 }

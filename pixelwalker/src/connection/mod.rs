@@ -5,7 +5,6 @@ use futures_util::{SinkExt, StreamExt as _};
 pub use handler::Handler;
 use pixelwalker_api::packets::{IntoWorldPacket, WorldPacket};
 use prost::Message;
-use std::println;
 use tokio::net::TcpStream;
 use tokio::signal;
 use tokio_tungstenite::tungstenite::Message as WsMessage;
@@ -48,7 +47,7 @@ impl Channel {
 
                     // Determine websocket message type.
                     match message {
-                        WsMessage::Text(text) => {
+                        WsMessage::Text(_text) => {
                             #[cfg(feature = "logs")]
                             {
                                 use colored::Colorize;
@@ -61,7 +60,7 @@ impl Channel {
                             let world_packet = WorldPacket::decode(&message[..])?;
                             handler(self, world_packet).await;
                         }
-                        WsMessage::Close(Some(frame)) => {
+                        WsMessage::Close(Some(_frame)) => {
                             #[cfg(feature = "logs")]
                             {
                                 use colored::Colorize;

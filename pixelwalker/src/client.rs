@@ -43,7 +43,7 @@ pub fn get_pocketbase_auth_id(pocketbase: &PocketBase<Auth>) -> String {
         .auth_token
         .as_ref()
         .expect("auth token should be set");
-    let payload = token.split('.').skip(1).next().unwrap();
+    let payload = token.split('.').nth(1).unwrap();
     let decoded = STANDARD_NO_PAD.decode(payload).unwrap();
     let data: Value = serde_json::from_slice(&decoded).expect("auth token should not be corrupted");
     data["id"].as_str().unwrap().to_owned()

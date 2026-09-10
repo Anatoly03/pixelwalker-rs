@@ -8,7 +8,7 @@ use pixelwalker_api::{PWCollection, PWCollectionQuery};
 use reqwest::header::{AUTHORIZATION, HeaderMap};
 use reqwest::{Client as FetchClient, Url};
 use serde::de::DeserializeOwned;
-use std::{format, println};
+use std::format;
 use tokio_tungstenite::{WebSocketStream, connect_async};
 
 /// The logged-in lobby state. The client has logged in and sees the lobby
@@ -128,7 +128,7 @@ impl Client<Lobby> {
         let game_host: &str = &PIXELWALKER_GAME_HOST;
         let token = &join_key.token;
         let socket_url: Url = Url::parse(&format!("{}/ws?joinKey={}", game_host, token))?;
-        let (ws_stream, response) = connect_async(socket_url.as_str()).await?;
+        let (ws_stream, _response) = connect_async(socket_url.as_str()).await?;
         let websocket: WebSocketStream<_> = ws_stream;
 
         #[cfg(feature = "logs")]
@@ -159,10 +159,10 @@ impl Client<Lobby> {
             println!(" {} {}", "└ Date:     ".bright_black(), date.bright_black());
         }
 
-        return Ok(Client {
+        Ok(Client {
             pocketbase: self.pocketbase,
             channel: websocket.into(),
             handlers: vec![],
-        });
+        })
     }
 }

@@ -19,15 +19,15 @@ pub trait IntoWorldPacket: Into<WorldPacket> {
 impl IntoWorldPacket for Ping {
     fn into_world_packet(&self) -> WorldPacket {
         WorldPacket {
-            packet: Some(Packet::Ping(self.clone())),
+            packet: Some(Packet::Ping(*self)),
         }
     }
 }
 
-impl Into<WorldPacket> for Ping {
-    fn into(self) -> WorldPacket {
+impl From<Ping> for WorldPacket {
+    fn from(val: Ping) -> Self {
         WorldPacket {
-            packet: Some(Packet::Ping(self)),
+            packet: Some(Packet::Ping(val)),
         }
     }
 }
@@ -35,15 +35,15 @@ impl Into<WorldPacket> for Ping {
 impl IntoWorldPacket for PlayerInitReceivedPacket {
     fn into_world_packet(&self) -> WorldPacket {
         WorldPacket {
-            packet: Some(Packet::PlayerInitReceived(self.clone())),
+            packet: Some(Packet::PlayerInitReceived(*self)),
         }
     }
 }
 
-impl Into<WorldPacket> for PlayerInitReceivedPacket {
-    fn into(self) -> WorldPacket {
+impl From<PlayerInitReceivedPacket> for WorldPacket {
+    fn from(val: PlayerInitReceivedPacket) -> Self {
         WorldPacket {
-            packet: Some(Packet::PlayerInitReceived(self)),
+            packet: Some(Packet::PlayerInitReceived(val)),
         }
     }
 }
@@ -59,12 +59,12 @@ impl IntoWorldPacket for &str {
     }
 }
 
-impl Into<WorldPacket> for &str {
-    fn into(self) -> WorldPacket {
+impl From<&str> for WorldPacket {
+    fn from(val: &str) -> Self {
         WorldPacket {
             packet: Some(Packet::PlayerChatPacket(PlayerChatPacket {
                 player_id: None,
-                message: self.to_string(),
+                message: val.to_string(),
             })),
         }
     }
@@ -81,12 +81,12 @@ impl IntoWorldPacket for String {
     }
 }
 
-impl Into<WorldPacket> for String {
-    fn into(self) -> WorldPacket {
+impl From<String> for WorldPacket {
+    fn from(val: String) -> Self {
         WorldPacket {
             packet: Some(Packet::PlayerChatPacket(PlayerChatPacket {
                 player_id: None,
-                message: self,
+                message: val,
             })),
         }
     }
