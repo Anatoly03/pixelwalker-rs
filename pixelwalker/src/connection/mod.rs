@@ -5,6 +5,7 @@ use futures_util::{SinkExt, StreamExt as _};
 pub use handler::Handler;
 use pixelwalker_api::packets::{FromWorldPacket, IntoWorldPacket, WorldPacket};
 use prost::Message;
+use std::println;
 use tokio::net::TcpStream;
 use tokio::signal;
 use tokio_tungstenite::tungstenite::Message as WsMessage;
@@ -49,7 +50,13 @@ impl Channel {
                             handler(self, world_packet).await;
                         }
                         WsMessage::Close(Some(frame)) => {
-                            println!("Close Frame: {frame:?}");
+                            #[cfg(feature = "logs")]
+                            {
+                                use colored::Colorize;
+
+                                println!("{}","Connection Closed".red().bold());
+                                println!(" {} {}", "└ Reason:   ".bright_black(), frame.reason.red());
+                            }
                         }
                         _ => {}
                     }

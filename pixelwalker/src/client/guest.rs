@@ -67,6 +67,32 @@ impl Client<Guest> {
             .pocketbase
             .auth_with_password("users", identifier, secret)?;
 
+        #[cfg(feature = "logs")]
+        {
+            use colored::Colorize;
+            use crate::client::get_pocketbase_auth_id;
+            use pixelwalker_api::User;
+
+            println!(
+                "{} {}",
+                "Authenticated to".green().bold(),
+                &PIXELWALKER_API_HOST.cyan().bold()
+            );
+            let id = get_pocketbase_auth_id(&pocketbase);
+            println!(" {} {}", "├ Record Id:".bright_black(), id.bright_black());
+            let username = pocketbase
+                .records("users")
+                .view(&id)
+                .call::<User>()
+                .map(|u| u.username)
+                .unwrap_or("<unknown>".into());
+            println!(
+                " {} {}",
+                "└ Username: ".bright_black(),
+                username.bright_black()
+            );
+        }
+
         return Ok(Client {
             pocketbase,
             channel: (),

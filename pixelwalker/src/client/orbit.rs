@@ -48,16 +48,3 @@ impl Client<Orbit> {
         });
     }
 }
-
-fn packet_type_id(world_packet: &WorldPacket) -> Option<TypeId> {
-    if let Some(packet) = &world_packet.packet {
-        let type_id = match packet {
-            Packet::Ping(_) => TypeId::of::<Ping>(),
-            Packet::PlayerInitPacket(_) => TypeId::of::<PlayerInitPacket>(),
-            _ => return None,
-        };
-        Some(type_id)
-    } else {
-        None
-    }
-}

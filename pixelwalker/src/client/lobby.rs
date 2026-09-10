@@ -1,10 +1,11 @@
 use crate::JoinKey;
+use crate::client::get_pocketbase_auth_id;
 use crate::vars::PIXELWALKER_GAME_HOST;
 use crate::{Client, state::State};
 use anyhow::Result;
 use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 use pixelwalker_api::pocketbase::client::Auth;
-use pixelwalker_api::{PWCollection, PWCollectionQuery};
+use pixelwalker_api::{PWCollection, PWCollectionQuery, PocketBase};
 use reqwest::header::{AUTHORIZATION, HeaderMap};
 use reqwest::{Client as FetchClient, Url};
 use serde::de::DeserializeOwned;
@@ -37,16 +38,7 @@ impl Client<Lobby> {
     /// println!("Logged in as: {}", bot.username);
     /// ```
     pub fn auth_id(&self) -> String {
-        let token = self
-            .pocketbase
-            .auth_token
-            .as_ref()
-            .expect("auth token should be set");
-        let payload = token.split('.').skip(1).next().unwrap();
-        let decoded = STANDARD_NO_PAD.decode(payload).unwrap();
-        let data: Value =
-            serde_json::from_slice(&decoded).expect("auth token should not be corrupted");
-        data["id"].as_str().unwrap().to_owned()
+        get_pocketbase_auth_id(&self.pocketbase)
     }
 
     /// Creates a new collection query builder.
@@ -94,11 +86,37 @@ impl Client<Lobby> {
 
         let value = builder
             .build()?
-            .get(endpoint)
+            .get(&endpoint)
             .send()
             .await?
             .json::<JoinKey>()
             .await?;
+
+        #[cfg(feature = "logs")]
+        {
+            use colored::Colorize;
+
+            println!(
+                "{} {}",
+                "Requested join key from".green().bold(),
+                endpoint.cyan().bold()
+            );
+            println!(
+                " {} {}",
+                "├ World Id: ".bright_black(),
+                world_id.as_ref().bright_black()
+            );
+            println!(
+                " {} {}",
+                "└ Join Key: ".bright_black(),
+                format!(
+                    "{}... <{} more characters>",
+                    &value.token[..15],
+                    value.token.len() - 15
+                )
+                .bright_black()
+            );
+        }
 
         Ok(value)
     }
@@ -109,14 +127,39 @@ impl Client<Lobby> {
     /// which gets upgraded to a websocket. This function will not start listening to
     /// incoming events.
     pub async fn connect(self, join_key: JoinKey) -> Result<Client<super::Orbit>> {
-        let websocket: WebSocketStream<_> = {
-            let game_host: &str = &PIXELWALKER_GAME_HOST;
-            let token = &join_key.token;
-            let socket_url: Url = Url::parse(&format!("{}/ws?joinKey={}", game_host, token))?;
-            let (ws_stream, response) = connect_async(socket_url.as_str()).await?;
-            println!("{response:?}");
-            ws_stream
-        };
+        let game_host: &str = &PIXELWALKER_GAME_HOST;
+        let token = &join_key.token;
+        let socket_url: Url = Url::parse(&format!("{}/ws?joinKey={}", game_host, token))?;
+        let (ws_stream, response) = connect_async(socket_url.as_str()).await?;
+        let websocket: WebSocketStream<_> = ws_stream;
+
+        #[cfg(feature = "logs")]
+        {
+            use colored::Colorize;
+
+            println!(
+                "{} {}",
+                "Socket Connected to".green().bold(),
+                format!("{game_host}/ws?joinKey=****").cyan().bold(),
+            );
+            let server = response
+                .headers()
+                .get("server")
+                .and_then(|h| h.to_str().ok())
+                .unwrap_or("<unknown>");
+            let date = response
+                .headers()
+                .get("date")
+                .and_then(|h| h.to_str().ok())
+                .unwrap_or("<unknown>");
+
+            println!(
+                " {} {}",
+                "├ Server:   ".bright_black(),
+                server.bright_black()
+            );
+            println!(" {} {}", "└ Date:     ".bright_black(), date.bright_black());
+        }
 
         return Ok(Client {
             pocketbase: self.pocketbase,

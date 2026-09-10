@@ -5,10 +5,13 @@ mod lobby;
 mod orbit;
 
 use crate::state::State;
+use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 pub use guest::Guest;
 pub use lobby::Lobby;
 pub use orbit::Orbit;
 use pixelwalker_api::PocketBase;
+use pixelwalker_api::pocketbase::client::Auth;
+use serde_json::Value;
 use std::fmt::Debug;
 
 /// A PixelWalker client instance.
@@ -31,4 +34,17 @@ impl<S: State> Debug for Client<S> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Client").finish_non_exhaustive()
     }
+}
+
+/// Utility function get the id of the authenticated record by decoding
+/// the JWT data and getting the `id` field.
+pub fn get_pocketbase_auth_id(pocketbase: &PocketBase<Auth>) -> String {
+    let token = pocketbase
+        .auth_token
+        .as_ref()
+        .expect("auth token should be set");
+    let payload = token.split('.').skip(1).next().unwrap();
+    let decoded = STANDARD_NO_PAD.decode(payload).unwrap();
+    let data: Value = serde_json::from_slice(&decoded).expect("auth token should not be corrupted");
+    data["id"].as_str().unwrap().to_owned()
 }
