@@ -3,13 +3,11 @@ use crate::client::get_pocketbase_auth_id;
 use crate::vars::PIXELWALKER_GAME_HOST;
 use crate::{Client, state::State};
 use anyhow::Result;
-use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 use pixelwalker_api::pocketbase::client::Auth;
-use pixelwalker_api::{PWCollection, PWCollectionQuery, PocketBase};
+use pixelwalker_api::{PWCollection, PWCollectionQuery};
 use reqwest::header::{AUTHORIZATION, HeaderMap};
 use reqwest::{Client as FetchClient, Url};
 use serde::de::DeserializeOwned;
-use serde_json::Value;
 use std::{format, println};
 use tokio_tungstenite::{WebSocketStream, connect_async};
 

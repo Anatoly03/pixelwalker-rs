@@ -3,7 +3,7 @@ mod handler;
 use anyhow::Result;
 use futures_util::{SinkExt, StreamExt as _};
 pub use handler::Handler;
-use pixelwalker_api::packets::{FromWorldPacket, IntoWorldPacket, WorldPacket};
+use pixelwalker_api::packets::{IntoWorldPacket, WorldPacket};
 use prost::Message;
 use std::println;
 use tokio::net::TcpStream;

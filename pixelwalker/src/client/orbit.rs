@@ -1,10 +1,8 @@
-use std::any::TypeId;
 
 use crate::connection::{Channel, Handler};
 use crate::{Client, state::State};
 use anyhow::Result;
-use pixelwalker_api::packets::world_packet::Packet;
-use pixelwalker_api::packets::{Ping, PlayerInitPacket, PlayerInitReceivedPacket, WorldPacket};
+use pixelwalker_api::packets::WorldPacket;
 use pixelwalker_api::pocketbase::client::Auth;
 
 /// The logged-in game state. The client has logged in and entered a world.
