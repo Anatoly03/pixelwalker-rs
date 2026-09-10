@@ -1,4 +1,4 @@
-use crate::packets::PlayerInitReceivedPacket;
+use crate::packets::{PlayerChatPacket, PlayerInitReceivedPacket};
 
 use super::{Ping, WorldPacket, world_packet::Packet};
 
@@ -44,6 +44,50 @@ impl Into<WorldPacket> for PlayerInitReceivedPacket {
     fn into(self) -> WorldPacket {
         WorldPacket {
             packet: Some(Packet::PlayerInitReceived(self)),
+        }
+    }
+}
+
+impl IntoWorldPacket for &str {
+    fn into_world_packet(&self) -> WorldPacket {
+        WorldPacket {
+            packet: Some(Packet::PlayerChatPacket(PlayerChatPacket {
+                player_id: None,
+                message: self.to_string(),
+            })),
+        }
+    }
+}
+
+impl Into<WorldPacket> for &str {
+    fn into(self) -> WorldPacket {
+        WorldPacket {
+            packet: Some(Packet::PlayerChatPacket(PlayerChatPacket {
+                player_id: None,
+                message: self.to_string(),
+            })),
+        }
+    }
+}
+
+impl IntoWorldPacket for String {
+    fn into_world_packet(&self) -> WorldPacket {
+        WorldPacket {
+            packet: Some(Packet::PlayerChatPacket(PlayerChatPacket {
+                player_id: None,
+                message: self.to_string(),
+            })),
+        }
+    }
+}
+
+impl Into<WorldPacket> for String {
+    fn into(self) -> WorldPacket {
+        WorldPacket {
+            packet: Some(Packet::PlayerChatPacket(PlayerChatPacket {
+                player_id: None,
+                message: self,
+            })),
         }
     }
 }
