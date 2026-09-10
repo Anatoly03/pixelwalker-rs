@@ -1,6 +1,5 @@
-use crate::packets::{PlayerChatPacket, PlayerInitPacket, PlayerInitReceivedPacket};
-
 use super::{Ping, WorldPacket, world_packet::Packet};
+use crate::packets::*;
 
 /// Protocol messages which can be derived from a world message.
 ///
@@ -12,7 +11,7 @@ pub trait FromWorldPacket<'p> {
 }
 
 /// Types which can be converted into a protocol message.
-pub trait IntoWorldPacket: Into<WorldPacket> {
+pub trait IntoWorldPacket {
     fn into_world_packet(&self) -> WorldPacket;
 }
 
@@ -36,6 +35,14 @@ impl IntoWorldPacket for PlayerInitReceivedPacket {
     fn into_world_packet(&self) -> WorldPacket {
         WorldPacket {
             packet: Some(Packet::PlayerInitReceived(*self)),
+        }
+    }
+}
+
+impl IntoWorldPacket for WorldBlockPlacedPacket {
+    fn into_world_packet(&self) -> WorldPacket {
+        WorldPacket {
+            packet: Some(Packet::WorldBlockPlacedPacket(self.clone())),
         }
     }
 }
@@ -105,6 +112,15 @@ impl<'p> FromWorldPacket<'p> for PlayerInitPacket {
     fn from_world_packet(packet: &'p WorldPacket) -> Option<&'p Self> {
         packet.packet.as_ref().and_then(|p| match p {
             Packet::PlayerInitPacket(p) => Some(p),
+            _ => None,
+        })
+    }
+}
+
+impl<'p> FromWorldPacket<'p> for WorldBlockPlacedPacket {
+    fn from_world_packet(packet: &'p WorldPacket) -> Option<&'p Self> {
+        packet.packet.as_ref().and_then(|p| match p {
+            Packet::WorldBlockPlacedPacket(p) => Some(p),
             _ => None,
         })
     }

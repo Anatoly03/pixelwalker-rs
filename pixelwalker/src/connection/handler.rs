@@ -1,6 +1,7 @@
 use crate::connection::Channel;
 use futures_util::future::BoxFuture;
 use pixelwalker_api::packets::WorldPacket;
+use crate::client::Resources;
 
 /// The trait which all event handlers of the PixelWalker connection implement.
 pub trait Handler: Send + Sync {
@@ -9,5 +10,6 @@ pub trait Handler: Send + Sync {
         &'a self,
         packet: &'a WorldPacket,
         channel: &'a mut Channel,
+        resources: &'a Resources,
     ) -> BoxFuture<'a, anyhow::Result<()>>;
 }

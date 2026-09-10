@@ -5,6 +5,7 @@
 pub mod client;
 pub mod connection;
 mod join_key;
+pub mod players;
 pub mod state;
 pub(crate) mod vars;
 
@@ -22,6 +23,7 @@ pub use pixelwalker_macros as macros;
 /// ```
 pub mod prelude {
     pub use crate::Client;
+    pub use crate::client::{FromResources, Res, Resources};
     pub use crate::connection::Channel;
     pub use pixelwalker_api::packets::*;
     pub use pixelwalker_macros::*;

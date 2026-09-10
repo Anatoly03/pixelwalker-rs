@@ -1,4 +1,5 @@
 use anyhow::Result;
+use pixelwalker::players::PlayerManager;
 use pixelwalker::prelude::*;
 
 /// Handles the initialization handshake. This occurs once when the
@@ -33,6 +34,23 @@ pub async fn handle_ping(ping: &Ping, channel: &mut Channel) -> Result<()> {
     Ok(())
 }
 
+#[handler(WorldBlockPlacedPacket)]
+pub async fn handle_block_placed(
+    channel: &mut Channel,
+    block: &WorldBlockPlacedPacket,
+) -> Result<()> {
+    // channel
+    //     .send(WorldBlockPlacedPacket {
+    //         player_id: None,
+    //         positions: vec![block.positions[0]],
+    //         layer: block.layer,
+    //         block_id: block.block_id + 1,
+    //         fields: HashMap::new(),
+    //     })
+    //     .await?;
+    Ok(())
+}
+
 /// The entry point of the bot application. It runs through all steps -
 /// authentication, connection and the player init handshake. Afterwards
 /// it just keeps sending pinging to keep the connection alive.
@@ -42,10 +60,11 @@ async fn main() -> anyhow::Result<()> {
     let client = Client::new().auth_with_email_password()?;
     let world_id = std::env::var("WORLD_ID").unwrap();
     let joinkey = client.get_join_key(world_id).await?;
-    let client = client
-        .connect(joinkey)
-        .await?
-        .mount([handle_init(), handle_ping()]);
+    let client =
+        client
+            .connect(joinkey)
+            .await?
+            .mount([handle_init(), handle_ping(), handle_block_placed()]);
     let _ = client.listen().await?;
 
     Ok(())

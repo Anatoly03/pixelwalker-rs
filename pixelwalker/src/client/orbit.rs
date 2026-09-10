@@ -1,4 +1,3 @@
-
 use crate::connection::{Channel, Handler};
 use crate::{Client, state::State};
 use anyhow::Result;
@@ -16,6 +15,14 @@ impl State for Orbit {
 }
 
 impl Client<Orbit> {
+    /// Registers a resource available to all handlers via `Res<T>`.
+    ///
+    /// Registering two values of the same concrete type replaces the first.
+    pub fn manage<T: Send + Sync + 'static>(mut self, value: T) -> Self {
+        self.resources.insert(value);
+        self
+    }
+
     /// Registers event handlers.
     pub fn mount<K>(mut self, handlers: K) -> Self
     where
@@ -28,21 +35,7 @@ impl Client<Orbit> {
     /// Starts listening on the websocket channel. This will run indefinitely until
     /// the websocket closes or an error occurs.
     pub async fn listen(mut self) -> Result<Client<super::Orbit>> {
-        let () = self
-            .channel
-            .listen(async |channel: &mut Channel, world_packet: WorldPacket| {
-                for handler in self.handlers.iter() {
-                    if let Err(e) = handler.call(&world_packet, channel).await {
-                        println!("{e:?}");
-                    }
-                }
-            })
-            .await?;
-
-        Ok(Client {
-            pocketbase: self.pocketbase,
-            channel: self.channel,
-            handlers: self.handlers,
-        })
+        self.channel.listen(&self.handlers, &self.resources).await?;
+        Ok(self)
     }
 }

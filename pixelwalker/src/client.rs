@@ -3,6 +3,7 @@
 mod guest;
 mod lobby;
 mod orbit;
+mod resource;
 
 use crate::state::State;
 use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
@@ -11,6 +12,7 @@ pub use lobby::Lobby;
 pub use orbit::Orbit;
 use pixelwalker_api::PocketBase;
 use pixelwalker_api::pocketbase::client::Auth;
+pub use resource::*;
 use serde_json::Value;
 use std::fmt::Debug;
 
@@ -26,6 +28,9 @@ pub struct Client<S: State> {
 
     /// The registered event handlers.
     pub(crate) handlers: S::Handlers,
+
+    /// Static resources within the application state.
+    pub(crate) resources: Resources,
 }
 
 impl<S: State> Debug for Client<S> {

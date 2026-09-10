@@ -1,5 +1,6 @@
 mod handler;
 
+pub use crate::client::Resources;
 use anyhow::Result;
 use futures_util::{SinkExt, StreamExt as _};
 pub use handler::Handler;
@@ -19,10 +20,11 @@ pub struct Channel {
 impl Channel {
     /// Starts an indefinite loop listening to game server messages and filtering
     /// for the binary [WorldPacket].
-    pub(crate) async fn listen<P>(&mut self, mut handler: P) -> Result<()>
-    where
-        P: AsyncFnMut(&mut Channel, WorldPacket),
-    {
+    pub(crate) async fn listen(
+        &mut self,
+        handlers: &[Box<dyn Handler + Send + Sync>],
+        resources: &Resources,
+    ) -> Result<()> {
         loop {
             tokio::select! {
                 // Stop the websocket on interrupt.
@@ -58,7 +60,11 @@ impl Channel {
                         }
                         WsMessage::Binary(message) => {
                             let world_packet = WorldPacket::decode(&message[..])?;
-                            handler(self, world_packet).await;
+                            for handler in handlers {
+                                if let Err(e) = handler.call(&world_packet, self, resources).await {
+                                    eprintln!("handler error: {e:?}");
+                                }
+                            }
                         }
                         WsMessage::Close(Some(frame)) => {
                             #[cfg(feature = "logs")]

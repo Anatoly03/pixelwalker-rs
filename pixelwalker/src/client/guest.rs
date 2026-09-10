@@ -1,4 +1,5 @@
 use super::Lobby;
+use crate::client::resource::Resources;
 use crate::vars::{AUTH_EMAIL, AUTH_PASSWORD, PIXELWALKER_API_HOST};
 use crate::{Client, state::State};
 use anyhow::Result;
@@ -25,6 +26,7 @@ impl Client<Guest> {
             pocketbase: PocketBase::new(&PIXELWALKER_API_HOST),
             channel: (),
             handlers: (),
+            resources: Resources::default(),
         }
     }
 
@@ -50,7 +52,7 @@ impl Client<Guest> {
     /// AUTH_EMAIL = user@example.org
     /// AUTH_PASSWORD = 12345678
     /// ```
-    pub fn auth_with_email_password(&self) -> Result<Client<Lobby>> {
+    pub fn auth_with_email_password(self) -> Result<Client<Lobby>> {
         let email: &Result<String, VarError> = &AUTH_EMAIL;
         let pass: &Result<String, VarError> = &AUTH_PASSWORD;
 
@@ -97,6 +99,7 @@ impl Client<Guest> {
             pocketbase,
             channel: (),
             handlers: (),
+            resources: self.resources,
         })
     }
 }

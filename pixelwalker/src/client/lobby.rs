@@ -1,5 +1,6 @@
 use crate::JoinKey;
 use crate::client::get_pocketbase_auth_id;
+use crate::players::PlayerManager;
 use crate::vars::PIXELWALKER_GAME_HOST;
 use crate::{Client, state::State};
 use anyhow::Result;
@@ -124,7 +125,7 @@ impl Client<Lobby> {
     /// This sets up a [WebSocketStream] by sending an HTTP request to the server
     /// which gets upgraded to a websocket. This function will not start listening to
     /// incoming events.
-    pub async fn connect(self, join_key: JoinKey) -> Result<Client<super::Orbit>> {
+    pub async fn connect(mut self, join_key: JoinKey) -> Result<Client<super::Orbit>> {
         let game_host: &str = &PIXELWALKER_GAME_HOST;
         let token = &join_key.token;
         let socket_url: Url = Url::parse(&format!("{}/ws?joinKey={}", game_host, token))?;
@@ -159,10 +160,13 @@ impl Client<Lobby> {
             println!(" {} {}", "└ Date:     ".bright_black(), date.bright_black());
         }
 
+        self.resources.insert(PlayerManager::default());
+
         Ok(Client {
             pocketbase: self.pocketbase,
             channel: websocket.into(),
             handlers: vec![],
+            resources: self.resources,
         })
     }
 }
