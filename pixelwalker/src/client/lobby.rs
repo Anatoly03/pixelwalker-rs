@@ -128,7 +128,7 @@ impl Client<Lobby> {
         let game_host: &str = &PIXELWALKER_GAME_HOST;
         let token = &join_key.token;
         let socket_url: Url = Url::parse(&format!("{}/ws?joinKey={}", game_host, token))?;
-        let (ws_stream, _response) = connect_async(socket_url.as_str()).await?;
+        let (ws_stream, response) = connect_async(socket_url.as_str()).await?;
         let websocket: WebSocketStream<_> = ws_stream;
 
         #[cfg(feature = "logs")]

@@ -47,7 +47,7 @@ impl Channel {
 
                     // Determine websocket message type.
                     match message {
-                        WsMessage::Text(_text) => {
+                        WsMessage::Text(text) => {
                             #[cfg(feature = "logs")]
                             {
                                 use colored::Colorize;
@@ -60,7 +60,7 @@ impl Channel {
                             let world_packet = WorldPacket::decode(&message[..])?;
                             handler(self, world_packet).await;
                         }
-                        WsMessage::Close(Some(_frame)) => {
+                        WsMessage::Close(Some(frame)) => {
                             #[cfg(feature = "logs")]
                             {
                                 use colored::Colorize;
