@@ -9,6 +9,7 @@ base64 = "0.23.1"
 futures-util = "0.3.34"
 once_cell = "1.21.4"
 pixelwalker-api = { path = "../pixelwalker-api" }
+pixelwalker-macros = { path = "../pixelwalker-macros" }
 prost = "0.14.4"
 reqwest = { version = "0.13", features = ["json"] }
 serde = { version = "1", features = ["derive"] }

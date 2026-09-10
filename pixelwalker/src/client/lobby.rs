@@ -119,7 +119,7 @@ impl Client<Lobby> {
 
         return Ok(Client {
             pocketbase: self.pocketbase,
-            websocket,
+            channel: websocket.into(),
         });
     }
 }

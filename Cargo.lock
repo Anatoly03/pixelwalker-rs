@@ -1274,6 +1274,7 @@ dependencies = [
  "futures-util",
  "once_cell",
  "pixelwalker-api",
+ "pixelwalker-macros",
  "prost",
  "reqwest",
  "serde",
@@ -1291,6 +1292,17 @@ dependencies = [
  "prost",
  "prost-build",
  "serde",
+]
+
+[[package]]
+name = "pixelwalker-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_json",
+ "syn 2.0.119",
 ]
 
 [[package]]

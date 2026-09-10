@@ -22,7 +22,7 @@ impl Client<Guest> {
     pub fn new() -> Client<Guest> {
         Self {
             pocketbase: PocketBase::new(&PIXELWALKER_API_HOST),
-            websocket: (),
+            channel: (),
         }
     }
 
@@ -67,7 +67,7 @@ impl Client<Guest> {
 
         return Ok(Client {
             pocketbase,
-            websocket: (),
+            channel: (),
         });
     }
 }

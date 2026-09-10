@@ -19,7 +19,7 @@ pub struct Client<S: State> {
 
     /// The websocket instance, which is used for communication with the game
     /// server.
-    pub(crate) websocket: S::SocketStruct,
+    pub(crate) channel: S::SocketStruct,
 }
 
 impl<S: State> Debug for Client<S> {
