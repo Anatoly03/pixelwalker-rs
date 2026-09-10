@@ -6,5 +6,7 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.104"
 dotenvy = "0.15.7"
+futures-util = "0.3.34"
 pixelwalker = { path = "../../pixelwalker" }
+pixelwalker-api = { path = "../../pixelwalker-api" }
 tokio = { version = "1", features = ["full"] }

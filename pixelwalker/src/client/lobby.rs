@@ -20,6 +20,7 @@ pub struct Lobby;
 impl State for Lobby {
     type PocketBaseState = Auth;
     type SocketStruct = ();
+    type Handlers = ();
 }
 
 impl Client<Lobby> {
@@ -120,6 +121,7 @@ impl Client<Lobby> {
         return Ok(Client {
             pocketbase: self.pocketbase,
             channel: websocket.into(),
+            handlers: vec![],
         });
     }
 }

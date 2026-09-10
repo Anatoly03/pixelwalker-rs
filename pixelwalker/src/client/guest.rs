@@ -14,6 +14,7 @@ pub struct Guest;
 impl State for Guest {
     type PocketBaseState = NoAuth;
     type SocketStruct = ();
+    type Handlers = ();
 }
 
 impl Client<Guest> {
@@ -23,6 +24,7 @@ impl Client<Guest> {
         Self {
             pocketbase: PocketBase::new(&PIXELWALKER_API_HOST),
             channel: (),
+            handlers: (),
         }
     }
 
@@ -68,6 +70,7 @@ impl Client<Guest> {
         return Ok(Client {
             pocketbase,
             channel: (),
+            handlers: (),
         });
     }
 }

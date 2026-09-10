@@ -16,12 +16,13 @@ pub use pixelwalker_macros as macros;
 /// The prelude is a module packaging all useful imports. By simply
 /// adding the following line at the top of the Rust file you have
 /// access to all requires resources:
-/// 
+///
 /// ```
 /// pub use pixelwalker::prelude::*;
 /// ```
 pub mod prelude {
     pub use crate::Client;
+    pub use crate::connection::Channel;
     pub use pixelwalker_api::packets::*;
     pub use pixelwalker_macros::*;
 }

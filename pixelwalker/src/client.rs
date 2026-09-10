@@ -20,6 +20,9 @@ pub struct Client<S: State> {
     /// The websocket instance, which is used for communication with the game
     /// server.
     pub(crate) channel: S::SocketStruct,
+
+    /// The registered event handlers.
+    pub(crate) handlers: S::Handlers,
 }
 
 impl<S: State> Debug for Client<S> {

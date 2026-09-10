@@ -8,4 +8,8 @@ pub trait State {
 
     /// The Socket struct, either `()` or `WebSocketStream<MaybeTlsStream<TcpStream>>`
     type SocketStruct;
+
+    /// The type of event handlers. This is a vector of handlers on an orbitting client,
+    /// but a Lobby client can have handlers as PocketBase subscriptions.
+    type Handlers;
 }

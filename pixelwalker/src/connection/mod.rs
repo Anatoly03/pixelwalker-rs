@@ -1,5 +1,8 @@
+mod handler;
+
 use anyhow::Result;
 use futures_util::{SinkExt, StreamExt as _};
+pub use handler::Handler;
 use pixelwalker_api::packets::{FromWorldPacket, IntoWorldPacket, WorldPacket};
 use prost::Message;
 use tokio::net::TcpStream;
@@ -9,6 +12,7 @@ use tokio_tungstenite::tungstenite::Message::Binary;
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 
 pub struct Channel {
+    /// The websocket instance.
     websocket: WebSocketStream<MaybeTlsStream<TcpStream>>,
 }
 

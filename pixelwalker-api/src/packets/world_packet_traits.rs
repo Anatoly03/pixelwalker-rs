@@ -1,4 +1,4 @@
-use crate::packets::{PlayerChatPacket, PlayerInitReceivedPacket};
+use crate::packets::{PlayerChatPacket, PlayerInitPacket, PlayerInitReceivedPacket};
 
 use super::{Ping, WorldPacket, world_packet::Packet};
 
@@ -7,7 +7,7 @@ use super::{Ping, WorldPacket, world_packet::Packet};
 /// Any type that implements [FromWorldPacket] must also implement
 /// [IntoWorldPacket], but a type that implements [IntoWorldPacket]
 /// must not necessarily implement [FromWorldPacket], like [String].
-pub trait FromWorldPacket<'p>: From<&'p WorldPacket> {
+pub trait FromWorldPacket<'p> {
     fn from_world_packet(packet: &'p WorldPacket) -> Option<&'p Self>;
 }
 
@@ -89,5 +89,23 @@ impl Into<WorldPacket> for String {
                 message: self,
             })),
         }
+    }
+}
+
+impl<'p> FromWorldPacket<'p> for Ping {
+    fn from_world_packet(packet: &'p WorldPacket) -> Option<&'p Self> {
+        packet.packet.as_ref().and_then(|p| match p {
+            Packet::Ping(p) => Some(p),
+            _ => None,
+        })
+    }
+}
+
+impl<'p> FromWorldPacket<'p> for PlayerInitPacket {
+    fn from_world_packet(packet: &'p WorldPacket) -> Option<&'p Self> {
+        packet.packet.as_ref().and_then(|p| match p {
+            Packet::PlayerInitPacket(p) => Some(p),
+            _ => None,
+        })
     }
 }

@@ -1,3 +1,6 @@
+mod macro_handler;
+
+use crate::macro_handler::HandlerMeta;
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{ItemFn, parse_macro_input};
@@ -13,11 +16,8 @@ use syn::{ItemFn, parse_macro_input};
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn handler(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn handler(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let metadata = parse_macro_input!(attr as HandlerMeta);
     let func = parse_macro_input!(item as ItemFn);
-    let name = func.sig.ident;
-    quote! {
-        pub fn #name () {}
-    }
-    .into()
+    macro_handler::handler(metadata, func).into()
 }

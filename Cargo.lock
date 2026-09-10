@@ -438,7 +438,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "dotenvy",
+ "futures-util",
  "pixelwalker",
+ "pixelwalker-api",
  "tokio",
 ]
 

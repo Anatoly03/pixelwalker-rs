@@ -1,4 +1,5 @@
-use pixelwalker::{Client, api::packets::*, macros::*};
+use anyhow::Result;
+use pixelwalker::prelude::*;
 
 /// Handles the initialization handshake. This occurs once when the
 /// [PlayerInitPacket] is sent by the server. The PixelWalker protocol
@@ -11,8 +12,10 @@ use pixelwalker::{Client, api::packets::*, macros::*};
 /// CLIENT -> SERVER:   PlayerInitReceivedPacket
 /// ```
 #[handler(PlayerInitPacket)]
-pub fn handle_init(channel: Channel) {
-    channel.send(PlayerInitReceivedPacket::default());
+pub async fn handle_init(channel: &mut Channel) -> Result<()> {
+    channel.send(PlayerInitReceivedPacket::default()).await?;
+    channel.send("Hello, World!").await?;
+    Ok(())
 }
 
 /// Handles the high-level ping pong. The PixelWalker protocol requires
@@ -25,8 +28,9 @@ pub fn handle_init(channel: Channel) {
 /// CLIENT -> SERVER:   Ping
 /// ```
 #[handler(Ping)]
-pub fn handle_ping(ping: &Ping, channel: Channel) {
-    channel.send(ping);
+pub async fn handle_ping(ping: &Ping, channel: &mut Channel) -> Result<()> {
+    channel.send(*ping).await?;
+    Ok(())
 }
 
 /// The entry point of the bot application. It runs through all steps -
@@ -40,8 +44,8 @@ async fn main() -> anyhow::Result<()> {
     let joinkey = client.get_join_key(world_id).await?;
     let client = client
         .connect(joinkey)
-        .await?;
-        // .mount(vec![handle_init, handle_ping]);
+        .await?
+        .mount([handle_init(), handle_ping()]);
     let _ = client.listen().await?;
 
     Ok(())
