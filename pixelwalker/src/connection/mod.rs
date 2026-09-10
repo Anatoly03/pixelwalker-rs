@@ -28,8 +28,14 @@ impl Channel {
             tokio::select! {
                 // Stop the websocket on interrupt.
                 _ = signal::ctrl_c() => {
-                    println!("Interrupt received, closing websocket…");
-                    self.websocket.close(None).await?;   // sends a Close frame
+                    self.websocket.close(None).await?;
+                    #[cfg(feature = "logs")]
+                    {
+                        use colored::Colorize;
+
+                        println!("{}","Interrupted".red().bold());
+                        println!(" {}", "└ Connection closed by our side".bright_black());
+                    }
                     return Ok(());
                 }
                 // Accept next message.
@@ -43,7 +49,13 @@ impl Channel {
                     // Determine websocket message type.
                     match message {
                         WsMessage::Text(text) => {
-                            println!("Binary: {text}");
+                            #[cfg(feature = "logs")]
+                            {
+                                use colored::Colorize;
+
+                                println!("{}","Received Text Message".cyan().bold());
+                                println!(" {} {}", "└ Reason:   ".bright_black(), text.bright_black());
+                            }
                         }
                         WsMessage::Binary(message) => {
                             let world_packet = WorldPacket::decode(&message[..])?;
