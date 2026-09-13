@@ -107,13 +107,18 @@ impl Client<Lobby> {
             );
             println!(
                 " {} {}",
-                "└ Join Key: ".bright_black(),
+                "├ Join Key: ".bright_black(),
                 format!(
                     "{}... <{} more characters>",
                     &value.token[..15],
                     value.token.len() - 15
                 )
                 .bright_black()
+            );
+            println!(
+                " {} {}",
+                "└ Link:     ".bright_black(),
+                format!("https://pixelwalker.net/world/{}", world_id.as_ref()).bright_blue()
             );
         }
 

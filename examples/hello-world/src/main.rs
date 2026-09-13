@@ -34,6 +34,27 @@ pub async fn handle_ping(ping: &Ping, channel: &mut Channel) -> Result<()> {
     Ok(())
 }
 
+/// Handles the high-level ping pong. The PixelWalker protocol requires
+/// a connection to respond with [PlayerInitReceivedPacket].
+///
+/// # Example
+///
+/// ```txt
+/// SERVER -> CLIENT:   Ping
+/// CLIENT -> SERVER:   Ping
+/// ```
+#[handler(PlayerChatPacket)]
+pub async fn handle_chat(chat: &PlayerChatPacket, players: Res<PlayerManager>) -> Result<()> {
+    let Some(player_id) = chat.player_id else {
+        return Ok(());
+    };
+
+    // let player = &players[player_id as usize];
+    // println!("{}: {}", player.username(), chat.message);
+    println!("{}: {}", player_id, chat.message);
+    Ok(())
+}
+
 #[handler(WorldBlockPlacedPacket)]
 pub async fn handle_block_placed(
     channel: &mut Channel,
@@ -60,11 +81,12 @@ async fn main() -> anyhow::Result<()> {
     let client = Client::new().auth_with_email_password()?;
     let world_id = std::env::var("WORLD_ID").unwrap();
     let joinkey = client.get_join_key(world_id).await?;
-    let client =
-        client
-            .connect(joinkey)
-            .await?
-            .mount([handle_init(), handle_ping(), handle_block_placed()]);
+    let client = client.connect(joinkey).await?.mount([
+        handle_init(),
+        handle_ping(),
+        handle_chat(),
+        handle_block_placed(),
+    ]);
     let _ = client.listen().await?;
 
     Ok(())

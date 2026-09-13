@@ -117,6 +117,15 @@ impl<'p> FromWorldPacket<'p> for PlayerInitPacket {
     }
 }
 
+impl<'p> FromWorldPacket<'p> for PlayerChatPacket {
+    fn from_world_packet(packet: &'p WorldPacket) -> Option<&'p Self> {
+        packet.packet.as_ref().and_then(|p| match p {
+            Packet::PlayerChatPacket(p) => Some(p),
+            _ => None,
+        })
+    }
+}
+
 impl<'p> FromWorldPacket<'p> for WorldBlockPlacedPacket {
     fn from_world_packet(packet: &'p WorldPacket) -> Option<&'p Self> {
         packet.packet.as_ref().and_then(|p| match p {
